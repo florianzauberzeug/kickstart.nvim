@@ -8,8 +8,12 @@ vim.pack.add {
 }
 
 vim.keymap.set('n', '\\', '<Cmd>Neotree reveal<CR>', { desc = 'NeoTree reveal', silent = true })
+vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle reveal<CR>', { desc = 'File [E]xplorer', silent = true }) -- `\` is awkward on a German keyboard
 
 require('neo-tree').setup {
+  window = {
+    width = 28, -- default is 40
+  },
   filesystem = {
     window = {
       mappings = {
@@ -18,3 +22,11 @@ require('neo-tree').setup {
     },
   },
 }
+
+-- Open the tree on startup, but keep the cursor in the file (skip for git commit messages etc.)
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    if vim.tbl_contains({ 'gitcommit', 'gitrebase' }, vim.bo.filetype) then return end
+    vim.cmd 'Neotree show'
+  end,
+})
